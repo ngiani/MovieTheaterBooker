@@ -1,4 +1,4 @@
-﻿@model MovieTheaterBooker.Data.Movie
+﻿@model MovieTheaterBooker.Models.MovieDetailsVM
 
 @{
     ViewData["Title"] = "Details";
@@ -31,6 +31,50 @@
     </dl>
 </div>
 <div>
+
+    <h2>Next releases</h2>
+
+    @{
+        var groupedReleases = Model.Releases.GroupBy(r => r.ReleaseTime.DayOfWeek);
+
+        foreach(var group in groupedReleases)
+        {
+            var day = group.Key.ToString();
+
+            <h5>
+                @day
+            </h5>
+
+            var orderedGroup = group.OrderBy(g => g.ReleaseTime);
+            <div class="container">
+                <div class="row">
+                    @foreach (var item in orderedGroup)
+                    {
+                        var hour = item.ReleaseTime.ToString("HH:MM");
+                        var screen = item.Screen.Name.ToString();
+              
+                        <div class="card" style="width: 14rem;">
+                            <div class="card-body">
+                                <h6 class="card-title">@hour</h6>
+                                <p class="card-text">@screen </p>
+                                <form>
+                                    <button class="btn btn-primary" asp-action="" asp-route-id="">
+                                        Buy
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+            <br>
+         
+        }
+
+    }
 
     <form> 
         <button class="btn btn-primary" asp-action="Index">
