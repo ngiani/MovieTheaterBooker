@@ -1,0 +1,9 @@
+﻿.outer {
+    display: flex;
+    justify-content: center;
+}
+
+.inner {
+    display: flex;
+    flex-wrap: nowrap
+}

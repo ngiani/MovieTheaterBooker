@@ -13,5 +13,9 @@ namespace MovieTheaterBooker.Data
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Screen> Screens { get; set; }
         public DbSet<ScreenRelease> ScreenReleases { get; set; }
+
+        public DbSet<Seat> Seats { get; set; }
+
+        public DbSet<SeatBooking> SeatsBooking { get; set; }
     }
 }

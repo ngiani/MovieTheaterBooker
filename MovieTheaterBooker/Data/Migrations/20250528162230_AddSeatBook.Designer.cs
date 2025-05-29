@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieTheaterBooker.Data;
 
@@ -11,9 +12,11 @@ using MovieTheaterBooker.Data;
 namespace MovieTheaterBooker.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528162230_AddSeatBook")]
+    partial class AddSeatBook
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,10 +309,7 @@ namespace MovieTheaterBooker.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Number")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Row")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
@@ -335,9 +335,14 @@ namespace MovieTheaterBooker.Data.Migrations
                     b.Property<int>("ScreenReleaseId")
                         .HasColumnType("int");
 
+                    b.Property<int>("SeatId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ScreenReleaseId");
+
+                    b.HasIndex("SeatId");
 
                     b.ToTable("SeatsBooking");
                 });
@@ -431,7 +436,15 @@ namespace MovieTheaterBooker.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MovieTheaterBooker.Data.Seat", "Seat")
+                        .WithMany()
+                        .HasForeignKey("SeatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ScreenRelease");
+
+                    b.Navigation("Seat");
                 });
 #pragma warning restore 612, 618
         }

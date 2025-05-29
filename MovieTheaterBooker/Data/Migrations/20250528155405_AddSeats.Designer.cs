@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieTheaterBooker.Data;
 
@@ -11,9 +12,11 @@ using MovieTheaterBooker.Data;
 namespace MovieTheaterBooker.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528155405_AddSeats")]
+    partial class AddSeats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -306,40 +309,19 @@ namespace MovieTheaterBooker.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Number")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Row")
+                    b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("nvarchar(3)");
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
 
-                    b.Property<int>("ScreenId")
+                    b.Property<int?>("ScreenId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ScreenId");
 
-                    b.ToTable("Seats");
-                });
-
-            modelBuilder.Entity("MovieTheaterBooker.Data.SeatBooking", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ScreenReleaseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ScreenReleaseId");
-
-                    b.ToTable("SeatsBooking");
+                    b.ToTable("Seat");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -414,24 +396,14 @@ namespace MovieTheaterBooker.Data.Migrations
 
             modelBuilder.Entity("MovieTheaterBooker.Data.Seat", b =>
                 {
-                    b.HasOne("MovieTheaterBooker.Data.Screen", "Screen")
-                        .WithMany()
-                        .HasForeignKey("ScreenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Screen");
+                    b.HasOne("MovieTheaterBooker.Data.Screen", null)
+                        .WithMany("Seats")
+                        .HasForeignKey("ScreenId");
                 });
 
-            modelBuilder.Entity("MovieTheaterBooker.Data.SeatBooking", b =>
+            modelBuilder.Entity("MovieTheaterBooker.Data.Screen", b =>
                 {
-                    b.HasOne("MovieTheaterBooker.Data.ScreenRelease", "ScreenRelease")
-                        .WithMany()
-                        .HasForeignKey("ScreenReleaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ScreenRelease");
+                    b.Navigation("Seats");
                 });
 #pragma warning restore 612, 618
         }

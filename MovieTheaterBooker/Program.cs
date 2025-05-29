@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieTheaterBooker.Data;
 using System.Reflection;
@@ -45,6 +46,7 @@ namespace MovieTheaterBooker
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Movies}/{action=Index}/{id?}");
+
             app.MapRazorPages();
 
             app.Run();

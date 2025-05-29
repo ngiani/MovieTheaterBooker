@@ -9,6 +9,7 @@ namespace MovieTheaterBooker.MappingProfiles
         public AutoMapperProfile()  
         {
             CreateMap<Movie, MovieDetailsVM>();
+            CreateMap<Screen, ScreenAtReleaseVM>();
         }
     }
 }

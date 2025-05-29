@@ -12,8 +12,8 @@ using MovieTheaterBooker.Data;
 namespace MovieTheaterBooker.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250525151336_AppDBContext")]
-    partial class AppDBContext
+    [Migration("20250528160126_Seats")]
+    partial class Seats
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -272,7 +272,7 @@ namespace MovieTheaterBooker.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Theaters");
+                    b.ToTable("Screens");
                 });
 
             modelBuilder.Entity("MovieTheaterBooker.Data.ScreenRelease", b =>
@@ -299,6 +299,29 @@ namespace MovieTheaterBooker.Data.Migrations
                     b.HasIndex("ScreenId");
 
                     b.ToTable("ScreenReleases");
+                });
+
+            modelBuilder.Entity("MovieTheaterBooker.Data.Seat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<int>("ScreenId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScreenId");
+
+                    b.ToTable("Seats");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -369,6 +392,22 @@ namespace MovieTheaterBooker.Data.Migrations
                     b.Navigation("Movie");
 
                     b.Navigation("Screen");
+                });
+
+            modelBuilder.Entity("MovieTheaterBooker.Data.Seat", b =>
+                {
+                    b.HasOne("MovieTheaterBooker.Data.Screen", "Screen")
+                        .WithMany("Seats")
+                        .HasForeignKey("ScreenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Screen");
+                });
+
+            modelBuilder.Entity("MovieTheaterBooker.Data.Screen", b =>
+                {
+                    b.Navigation("Seats");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,6 +4,8 @@
     ViewData["Title"] = "Details";
 }
 
+
+
 <h1> @Html.DisplayFor(model => model.Title)</h1>
 
 <div>
@@ -58,8 +60,9 @@
                                 <h6 class="card-title">@hour</h6>
                                 <p class="card-text">@screen </p>
                                 <form>
-                                    <button class="btn btn-primary" asp-action="" asp-route-id="">
-                                        Buy
+                                    <button class="btn btn-primary" asp-controller="Screens" asp-action="Details"
+                                            asp-route-id=@item.Screen.Id asp-route-releaseId=@item.Id>
+                                        Book
                                     </button>
                                 </form>
 

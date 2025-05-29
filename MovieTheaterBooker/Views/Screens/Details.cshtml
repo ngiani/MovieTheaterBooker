@@ -1,0 +1,40 @@
+﻿@model MovieTheaterBooker.Models.ScreenAtReleaseVM
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Buy @Model.ScreenRelease.Movie.Title</h1>
+
+<br>
+<h3> @Model.ScreenRelease.ReleaseTime.DayOfWeek.ToString() at 
+
+    @Model.ScreenRelease.ReleaseTime.ToString("HH:MM")
+</h3>
+
+<br>
+<h2 align="center">Screen @Model.Name</h2>
+<div class=container>
+
+    @{
+        var groupedByRow = @Model.Seats.GroupBy(s => s.Row);
+        @foreach (var row in groupedByRow)
+        {
+            <div class=row>
+
+                <div class=outer> 
+
+                    @foreach (var seat in row)
+                    {
+                        <div class="card" style="width: 2rem; height: 2rem;">
+                            <h8 class="card-title" align = "center">@seat.Row@seat.Number</h8>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+    
+    
+</div>
+
