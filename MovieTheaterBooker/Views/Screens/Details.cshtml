@@ -1,4 +1,5 @@
-﻿@model MovieTheaterBooker.Models.ScreenAtReleaseVM
+﻿
+@model MovieTheaterBooker.Models.ScreenAtReleaseVM
 
 @{
     ViewData["Title"] = "Details";
@@ -14,27 +15,108 @@
 
 <br>
 <h2 align="center">Screen @Model.Name</h2>
+<hr />
+
 <div class=container>
 
     @{
+        //Groupd seats by row
         var groupedByRow = @Model.Seats.GroupBy(s => s.Row);
         @foreach (var row in groupedByRow)
         {
             <div class=row>
 
-                <div class=outer> 
+                <div class=outer>
 
-                    @foreach (var seat in row)
-                    {
-                        <div class="card" style="width: 2rem; height: 2rem;">
-                            <h8 class="card-title" align = "center">@seat.Row@seat.Number</h8>
-                        </div>
-                    }
+                    <div class="toggle-group">
+                        @foreach (var seat in row)
+                        {
+                            //Disable checkbox if seat is already booked
+
+                            if (Model.SeatBookings.Any(s => s.ScreenRelease.Id == Model.ScreenRelease.Id && s.Seat.Id == seat.Id))
+                            {
+                                <input type="checkbox" disabled id=@seat.Id name=@seat.Row@seat.Number class="toggle-checkbox">
+                            }
+
+                            //Enable if not booked already
+                            else
+                            {
+                               <input type="checkbox" id=@seat.Id name=@seat.Row@seat.Number class="toggle-checkbox">
+                            }
+
+                            <label width="" for=@seat.Row@seat.Number>@seat.Row@seat.Number</label> 
+                        }
+                    </div>
                 </div>
             </div>
         }
+
     }
-    
-    
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkboxes = document.querySelectorAll(".toggle-checkbox");
+            const seatCounterDisplay = document.getElementById("seatCounterDisplay");
+             const seatCounterContainer = document.getElementById("seatCounterContainer");
+
+            var seatCounter = 0;
+
+            const buyButton = document.getElementById("Buy");
+
+            checkboxes.forEach(function (checkbox) {
+                checkbox.addEventListener("change", async function () {
+
+                    const id = checkbox.getAttribute("id");
+                    const selected = checkbox.checked;
+
+
+                    await fetch("/Screens/ToggleSeat", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            id: id,
+                            selected: selected
+                        })
+                    });
+
+                    if (checkbox.checked)
+                        seatCounter++;
+                    else 
+                        seatCounter--;
+
+                    if (seatCounter == 0)
+                    {
+                        seatCounterContainer.style.display = "none";
+
+                        buyButton.disabled = true;
+                    }
+                    else 
+                    {
+                        seatCounterDisplay.textContent = seatCounter;
+                        seatCounterContainer.style.display = "block";
+
+                        buyButton.disabled = false;
+                    }
+                });
+            });
+
+         
+        });
+
+         window.addEventListener("beforeunload", function () {
+            navigator.sendBeacon("/Screens/CancelBooking");
+        });
+    </script>
+
+    <p id="seatCounterContainer" style="display: none;">You are buying <span id="seatCounterDisplay">0</span> tickets</p>
+
+    <form  asp-controller="Screens" asp-action="Buy" asp-route-releaseId=@Model.ScreenRelease.Id formmethod="post">
+        <button id="Buy" disabled class="btn btn-primary" >
+            Buy
+        </button>
+    </form>
 </div>
 

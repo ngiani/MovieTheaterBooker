@@ -1,0 +1,40 @@
+﻿@model MovieTheaterBooker.Models.ConfirmedBookingVM 
+
+@{
+    ViewData["Title"] = "Confirmed";
+}
+
+<h1>Tickets confirmed for Movie @Model.SeatBookings[0].ScreenRelease.Movie.Title 
+    @Model.SeatBookings[0].ScreenRelease.ReleaseTime.DayOfWeek.ToString()
+    at 
+    @Model.SeatBookings[0].ScreenRelease.ReleaseTime.ToString("HH:MM")
+</h1>
+<br>
+<h2>
+    Screen @Model.SeatBookings[0].ScreenRelease.Screen.Name
+</h2>
+<br>
+<h3>Seats booked :</h3>
+<div class="container"> 
+    <div class="row">
+        @{
+            foreach (var booking in Model.SeatBookings)
+            {
+                <div>
+                    <h3> @booking.Seat.Row@booking.Seat.Number</h3>
+                </div>
+               
+            }
+        }
+    </div>
+</div>
+<div class="line">
+    
+</div>
+
+<form  asp-controller="Home" asp-action="Index">
+    <button class="btn btn-primary">
+        Home
+    </button>
+</form>
+
