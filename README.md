@@ -59,7 +59,7 @@ MovieTheaterBooker/
    dotnet run
    ```
 
-5. Open your browser and go to `https://localhost:5001`.
+5. Open your browser and go to localhost.
 
 ## 🧪 Running Tests
 
