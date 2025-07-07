@@ -40,7 +40,7 @@ MovieTheaterBooker/
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/MovieTheaterBooker.git
+   git clone https://github.com/ngiani/MovieTheaterBooker.git
    cd MovieTheaterBooker/MovieTheaterBooker
    ```
 
