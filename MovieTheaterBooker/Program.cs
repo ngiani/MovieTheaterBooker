@@ -22,7 +22,13 @@ namespace MovieTheaterBooker
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
-            builder.Services.AddSession();
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Lax; // oppure None se stai facendo cross-origin
+            });
             builder.Services.AddHttpContextAccessor();
 
             var app = builder.Build();
@@ -43,9 +49,9 @@ namespace MovieTheaterBooker
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthorization();
             app.UseSession();
+            app.UseAuthorization();
+   
 
             app.MapControllerRoute(
                 name: "default",

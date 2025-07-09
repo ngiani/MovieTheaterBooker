@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity.UI.V4.Pages.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MovieTheaterBooker.Data;
 using MovieTheaterBooker.HTTPExtensions;
 using MovieTheaterBooker.Models;
+using Newtonsoft.Json;
 
 namespace MovieTheaterBooker.Controllers
 {
@@ -116,10 +118,22 @@ namespace MovieTheaterBooker.Controllers
         public async Task<IActionResult> ToggleSeat([FromBody] SeatToggleDTO dto)
         {
             // Get temp booking list from session as list of seats IDs
-            var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
+            //var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
 
-           
+            List<int> bookedSeatsIDS; 
 
+            if (!TempData.ContainsKey("bookedSeatsIDS"))
+            {
+                bookedSeatsIDS = new List<int>();
+            }
+            
+            else
+            {
+                string json = TempData["bookedSeatsIDS"].ToString();
+                bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
+            }
+         
+               
 
             //Check if toggle is selected
             if (dto.Selected)
@@ -138,22 +152,45 @@ namespace MovieTheaterBooker.Controllers
             }
 
             //Save temp list in session
-            HttpContext.Session.SetObjectAsJson("bookedSeatsIDS", bookedSeatsIDS);
+            //HttpContext.Session.SetObjectAsJson("bookedSeatsIDS", bookedSeatsIDS);
+            //await HttpContext.Session.CommitAsync();
+            TempData["bookedSeatsIDS"]  = JsonConvert.SerializeObject(bookedSeatsIDS);
+
+            Console.WriteLine("ToggleSeat Session ID: " + HttpContext.Session.Id);
+            Console.WriteLine("ToggleSeat Keys: " + string.Join(", ", HttpContext.Session.Keys));
 
             return Ok();
         }
 
-        //Buy tickets at the specified screen release, from bookings in temporary list 
+        /// <summary>
+        /// Buy tickets at the specified screen release, from bookings in temporary list 
+        /// </summary>
+        /// <param name="releaseId"></param>
+        /// <returns></returns>
         [HttpPost("Buy/{releaseId}")]
         public async Task<IActionResult> Buy(int? releaseId)
         {
             // Get temp booking list from session as list of seats IDs
-            var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
+            //var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
+
+            string json = TempData["bookedSeatsIDS"].ToString();
+            var bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
+
+            if (bookedSeatsIDS == null)
+            {
+                return Ok("Error: booked seats list not an object");
+            }
+               
+
+
+            Console.WriteLine("ToggleSeat Session ID: " + HttpContext.Session.Id);
+            Console.WriteLine("ToggleSeat Keys: " + string.Join(", ", HttpContext.Session.Keys));
 
             var seats = await _context.Seats.Include(s => s.Screen).ToListAsync();
             var releases = await _context.ScreenReleases.Include(s => s.Movie).Include(s => s.Screen).ToListAsync();
 
 
+            //Save to db all booked 
             foreach (var seatID in bookedSeatsIDS)
             {
                 //Create a seat booking from seat ID
@@ -175,16 +212,28 @@ namespace MovieTheaterBooker.Controllers
                 await _context.SaveChangesAsync();
             }
 
+
+
+
             return RedirectToAction("Confirmed", "Screens");
 
 
         }
 
-        //Bookings confirm view (show booking from previous list)
+        /// <summary>
+        /// Bookings confirm view (show booking from previous list)
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Confirmed()
         {
             // Get temp booking list from session as list of seats IDs
-            var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
+            //var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
+
+            string json = TempData["bookedSeatsIDS"].ToString();
+            var bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
+
+            if (bookedSeatsIDS == null)
+                return Ok("Error: booked seats list not an object");
 
 
             //Get bookings from Db
@@ -201,7 +250,9 @@ namespace MovieTheaterBooker.Controllers
             ConfirmedBookingVM confirmedBookingVM = new ConfirmedBookingVM();
             confirmedBookingVM.SeatBookings = currentBookings;
 
-            HttpContext.Session.Remove("bookedSeatsIDS");
+            //HttpContext.Session.Remove("bookedSeatsIDS");
+
+            TempData.Remove("bookedSeatsIDS");
 
             return View("Confirmed", confirmedBookingVM);
         }
