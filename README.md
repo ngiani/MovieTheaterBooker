@@ -3,12 +3,15 @@
 **MovieTheaterBooker** is an ASP.NET Core MVC web application that allows you to manage a movie theater, including movie screenings, theaters, seats, and reservations.
 
 ## 🚀 Main Features
-
-- Movie management (add, edit, delete)
-- Theater/screen management
-- Creation of movie screenings (movie in a specific theater at a specific time)
 - Seat reservation for a selected screening
 - Web interface using MVC pattern
+
+## 🚀 Future Features 
+ -Identity management
+- Movie management (add, edit, delete) as admin
+- Theater/screen management as admin
+- Creation of movie screenings (movie in a specific theater at a specific time) as admin
+
 
 ## 🧱 Project Architecture
 
