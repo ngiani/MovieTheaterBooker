@@ -7,7 +7,7 @@
 - Web interface using MVC pattern
 
 ## 🚀 Future Features 
- -Identity management
+- Identity management (admin, user)
 - Movie management (add, edit, delete) as admin
 - Theater/screen management as admin
 - Creation of movie screenings (movie in a specific theater at a specific time) as admin
