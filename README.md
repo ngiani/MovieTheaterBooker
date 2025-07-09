@@ -6,7 +6,7 @@
 - Seat reservation for a selected screening
 - Web interface using MVC pattern
 
-## 🚀 Future Features 
+## ⚙️ Future Features 
 - Identity management (admin, user)
 - Movie management (add, edit, delete) as admin
 - Theater/screen management as admin
