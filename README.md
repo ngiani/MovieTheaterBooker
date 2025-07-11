@@ -13,7 +13,9 @@
 ## ⚙️ Future Features 
 - Screens management as admin
 - Creation of movie releases (movie in a specific theater at a specific time) as admin
-- Show of bookings as user 
+- Show of bookings as user
+- Email confirmation system on register
+- Mockup of payment when booking a seat 
 
 
 ## 🧱 Project Architecture
