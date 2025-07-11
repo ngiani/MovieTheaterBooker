@@ -6,12 +6,13 @@
 - List of current screening and movies
 - Seat reservation for a selected screening
 - Web interface using MVC pattern
-
-## ⚙️ Future Features 
-- Identity management (admin, user)
+- Identity management (login, register)
+- User roles (admin, user)
 - Movie management (add, edit, delete) as admin
-- Theater/screen management as admin
-- Creation of movie screenings (movie in a specific theater at a specific time) as admin
+- 
+## ⚙️ Future Features 
+- Screens management as admin
+- Creation of movie releases (movie in a specific theater at a specific time) as admin
 
 
 ## 🧱 Project Architecture
