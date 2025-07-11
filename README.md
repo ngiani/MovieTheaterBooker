@@ -4,7 +4,7 @@
 
 ## 🚀 Current Features
 - List of current movies and bookable releases
-- Seat reservation for a selected screening
+- Seat reservation for a selected releases
 - Identity management (login, register)
 - User roles (admin, user)
 - Movie management (add, edit, delete) as admin
