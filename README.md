@@ -79,7 +79,6 @@ dotnet test
 ## 📌 Notes
 
 - The project uses Entity Framework with an `ApplicationDbContext`.
-- Authentication is not included but can be easily added using ASP.NET Identity.
 - This is a solid starting point for a cinema or event booking web application.
 
 ## 📄 License
