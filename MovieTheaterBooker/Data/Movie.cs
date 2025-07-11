@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+
 namespace MovieTheaterBooker.Data
 {
     public class Movie

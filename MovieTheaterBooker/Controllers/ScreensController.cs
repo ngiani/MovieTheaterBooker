@@ -177,10 +177,8 @@ namespace MovieTheaterBooker.Controllers
             var bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
 
             if (bookedSeatsIDS == null)
-            {
-                return Ok("Error: booked seats list not an object");
-            }
-               
+                ModelState.AddModelError(string.Empty, "Empy booked seats IDS.");
+
 
 
             Console.WriteLine("ToggleSeat Session ID: " + HttpContext.Session.Id);
@@ -233,7 +231,7 @@ namespace MovieTheaterBooker.Controllers
             var bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
 
             if (bookedSeatsIDS == null)
-                return Ok("Error: booked seats list not an object");
+                ModelState.AddModelError(string.Empty, "Empy booked seats IDS.");
 
 
             //Get bookings from Db

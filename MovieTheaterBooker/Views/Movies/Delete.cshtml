@@ -1,0 +1,29 @@
+﻿@model Movie
+
+@{
+    ViewData["Title"] = "Delete Movie";
+}
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dt>
+    </dl>
+
+    
+    
+        <form asp-action="Delete">
+            <div class="form-group">
+                <a asp-action="Index" class="btn btn-danger" style="background-color: red">Cancel</a>
+                <input type="hidden" asp-for="Id" />
+                <input type="submit" value="Delete" class="btn btn-danger" />
+
+            </div>
+        </form>
+    
+  
+    
+</div>

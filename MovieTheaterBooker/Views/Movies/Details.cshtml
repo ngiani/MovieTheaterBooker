@@ -34,54 +34,83 @@
 </div>
 <div>
 
-    <h2>Next releases</h2>
+ 
 
     @{
-        var groupedReleases = Model.Releases.GroupBy(r => r.ReleaseTime.DayOfWeek);
 
-        foreach(var group in groupedReleases)
+        //Check if user is not an admin
+        if (!User.IsInRole(Roles.Administrator))
         {
-            var day = group.Key.ToString();
+            //Check if there are screen releases for the movie
+            if (Model.Releases.Count > 0)
+            {
+                var groupedReleases = Model.Releases.GroupBy(r => r.ReleaseTime.DayOfWeek);
 
-            <h5>
-                @day
-            </h5>
+                <h2>Next releases</h2>
 
-            var orderedGroup = group.OrderBy(g => g.ReleaseTime);
-            <div class="container">
-                <div class="row">
-                    @foreach (var item in orderedGroup)
-                    {
-                        var hour = item.ReleaseTime.ToString("HH:MM");
-                        var screen = item.Screen.Name.ToString();
-              
-                        <div class="card" style="width: 14rem;">
-                            <div class="card-body">
-                                <h6 class="card-title">@hour</h6>
-                                <p class="card-text">@screen </p>
-                                <form>
-                                    <button class="btn btn-primary" asp-controller="Screens" asp-action="Details"
-                                            asp-route-id=@item.Screen.Id asp-route-releaseId=@item.Id>
-                                        Book
-                                    </button>
-                                </form>
+                //Show screen releases for each day
+                foreach (var group in groupedReleases)
+                {
+                    var day = group.Key.ToString();
 
-                            </div>
+                    <h5>
+                        @day
+                    </h5>
+
+                    var orderedGroup = group.OrderBy(g => g.ReleaseTime);
+                    <div class="container">
+                        <div class="row">
+                            @foreach (var item in orderedGroup)
+                            {
+                                var hour = item.ReleaseTime.ToString("HH:MM");
+                                var screen = item.Screen.Name.ToString();
+
+                                <div class="card" style="width: 14rem;">
+                                    <div class="card-body">
+                                        <h6 class="card-title">@hour</h6>
+                                        <p class="card-text">@screen </p>
+                                        <form>
+                                            <button class="btn btn-primary" asp-controller="Screens" asp-action="Details"
+                                                    asp-route-id=@item.Screen.Id asp-route-releaseId=@item.Id>
+                                                Book
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            }
+
                         </div>
-                    }
+                    </div>
 
-                </div>
-            </div>
+                    <br>
 
-            <br>
-         
+                }
+            }
+
+            <form>
+                <button class="btn btn-primary" asp-controller="Movies" asp-action="Index">
+                    Back
+                </button>
+            </form>
+
         }
 
+
+        else
+        {
+
+            <form asp-action="Delete">
+                <div class="form-group">
+                    <a asp-action="Index" class="btn btn-danger" style="background-color: red">Cancel</a>
+                    <a asp-action="Edit" asp-route-id=@Model.ID asp-route-releaseId=@Model.ID class="btn btn-primary" style="background-color: orangered">Edit</a>
+
+                </div>
+            </form>
+        }
+      
     }
 
-    <form> 
-        <button class="btn btn-primary" asp-action="Index">
-            Back
-        </button>
-    </form>
+
+    
 </div>

@@ -21,11 +21,37 @@
                         <button class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">
                             Details
                         </button>
+
+                        @if (User.IsInRole(Roles.Administrator))
+                        {
+                            <button class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">
+                                Delete
+                            </button>
+                        }
+                      
                     </form>
+
+
                   
                 </div>
             </div>
 
         }
+
+
     </div>
+</div>
+<br />
+<div>
+    @{
+        var isAdmin = User.IsInRole(Roles.Administrator);
+        if (isAdmin)
+        {
+            <form>
+                <button class="btn btn-primary" style="background-color: forestgreen" asp-action="Create">
+                    Add New
+                </button>
+            </form>
+        }
+    }
 </div>
