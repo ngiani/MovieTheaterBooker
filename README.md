@@ -9,7 +9,7 @@
 - Identity management (login, register)
 - User roles (admin, user)
 - Movie management (add, edit, delete) as admin
-- 
+
 ## ⚙️ Future Features 
 - Screens management as admin
 - Creation of movie releases (movie in a specific theater at a specific time) as admin
