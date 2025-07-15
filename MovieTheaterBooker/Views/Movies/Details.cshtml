@@ -38,9 +38,7 @@
 
     @{
 
-        //Check if user is not an admin
-        if (!User.IsInRole(Roles.Administrator))
-        {
+    
             //Check if there are screen releases for the movie
             if (Model.Releases.Count > 0)
             {
@@ -54,8 +52,12 @@
                     var day = group.Key.ToString();
 
                     <h5>
-                        @day
+                        @day 
                     </h5>
+                    <h6>
+                        @group.ToList()[0].ReleaseTime.Date.ToString("dd/MM/yyyy")
+                    </h6>
+
 
                     var orderedGroup = group.OrderBy(g => g.ReleaseTime);
                     <div class="container">
@@ -69,12 +71,33 @@
                                     <div class="card-body">
                                         <h6 class="card-title">@hour</h6>
                                         <p class="card-text">@screen </p>
-                                        <form>
-                                            <button class="btn btn-primary" asp-controller="Screens" asp-action="Details"
-                                                    asp-route-id=@item.Screen.Id asp-route-releaseId=@item.Id>
-                                                Book
-                                            </button>
-                                        </form>
+                                        @{
+
+                                            //If admin, can delete or edit the screen release
+
+                                            if (User.IsInRole(Roles.Administrator))
+                                            {
+                                                <div class="form-group">
+                                                    <a asp-action="Delete" asp-controller="ScreenReleases" asp-route-id=@item.Id class="btn btn-danger">Delete</a>
+                                                    <a asp-action="Edit" asp-controller="ScreenReleases" asp-route-id=@item.Id class="btn btn-primary" style="background-color: orangered">Edit</a>
+
+                                                </div>
+                                            }
+
+                                            //Otherwise, user can book
+                                            else
+                                            {
+                                                <form>
+                                                    <button class="btn btn-primary" asp-controller="Screens" asp-action="Details"
+                                                            asp-route-id=@item.Screen.Id asp-route-releaseId=@item.Id>
+                                                        Book
+                                                    </button>
+                                                </form>
+                                            }
+
+                                        }
+                                        
+                  
 
                                     </div>
                                 </div>
@@ -88,17 +111,18 @@
                 }
             }
 
-            <form>
-                <button class="btn btn-primary" asp-controller="Movies" asp-action="Index">
-                    Back
-                </button>
-            </form>
 
-        }
+      
 
-
-        else
+        //If user is and admin, can delete the movie or add a new screen release
+        if (User.IsInRole(Roles.Administrator))
         {
+
+            <a class="btn btn-primary" asp-controller="ScreenReleases" asp-route-movieId=@Model.ID asp-action="Create">
+                Add New Release
+            </a>
+
+            <hr/>
 
             <form asp-action="Delete">
                 <div class="form-group">
@@ -108,6 +132,17 @@
                 </div>
             </form>
         }
+
+        
+        else
+        {
+            <form>
+                <button class="btn btn-primary" asp-controller="Movies" asp-action="Index">
+                    Back
+                </button>
+            </form>
+        }
+
       
     }
 

@@ -1,0 +1,37 @@
+﻿@model MovieTheaterBooker.Data.ScreenRelease
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h3>Add new screen release for the movie @Model.Movie.Title</h3>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="ScreenId" class="control-label"></label>
+                <select asp-for="ScreenId" class="form-control" asp-items="@(ViewData["ScreenId"] as SelectList)"></select>
+                <span asp-validation-for="ScreenId" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="MovieId" />
+            <div class="form-group">
+                <label asp-for="ReleaseTime" class="control-label"></label>
+                <input asp-for="ReleaseTime" class="form-control" type="datetime-local"
+                       value="@Model.ReleaseTime.ToString("yyyy-MM-ddTHH:mm")" />
+                <span asp-validation-for="ReleaseTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Details" asp-controller="Movies" asp-route-id=@Model.MovieId class="btn btn-danger">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
