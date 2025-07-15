@@ -8,10 +8,10 @@
 - Identity management (login, register)
 - User roles (admin, user)
 - Movie management (add, edit, delete) as admin
+- Creation of movie releases (movie in a specific theater at a specific time) as admin, with control to avoid conflict between releases at the same time
 
 ## ⚙️ Future Features 
 - Screens management as admin
-- Creation of movie releases (movie in a specific theater at a specific time) as admin
 - Show of bookings as user
 - Email confirmation system on register
 - Mockup of payment when booking a seat 
