@@ -143,7 +143,6 @@ namespace MovieTheaterBooker.Controllers
 
                     currentRelease.ReleaseTime = screenRelease.ReleaseTime;
 
-                    _context.Update(screenRelease);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
