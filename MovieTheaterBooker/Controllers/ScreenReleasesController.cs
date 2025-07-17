@@ -210,7 +210,6 @@ namespace MovieTheaterBooker.Controllers
         private bool IsConflict(Screen screen, Movie movie, DateTime startDate)
         {
 
-          
             //Get possible conflicts by checking releases at the same screen
             List<ScreenRelease> possibleConflicts = _context.ScreenReleases.Include(r => r.Screen).Where(r => r.Screen.Id == screen.Id).Include(r => r.Movie).ToList();
 

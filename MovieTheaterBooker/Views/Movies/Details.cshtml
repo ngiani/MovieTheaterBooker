@@ -62,9 +62,10 @@
                     var orderedGroup = group.OrderBy(g => g.ReleaseTime);
                     <div class="container">
                         <div class="row">
+
                             @foreach (var item in orderedGroup)
                             {
-                                var hour = item.ReleaseTime.ToString("HH:MM");
+                                var hour = item.ReleaseTime.ToString("HH:mm");
                                 var screen = item.Screen.Name.ToString();
 
                                 <div class="card" style="width: 14rem;">

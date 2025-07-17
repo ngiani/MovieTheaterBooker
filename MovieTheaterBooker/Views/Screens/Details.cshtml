@@ -22,39 +22,41 @@
     @{
         //Groupd seats by row
         var groupedByRow = @Model.Seats.GroupBy(s => s.Row);
-        @foreach (var row in groupedByRow)
+            @foreach (var row in groupedByRow)
         {
-            <div class=row>
+                <div class=row>
 
-                <div class=outer>
+                    <div class=outer>
 
-                    <div class="toggle-group">
-                        @foreach (var seat in row)
+                        <div class="toggle-group">
+                            @foreach (var seat in row)
                         {
                             //Disable checkbox if seat is already booked
 
                             if (Model.SeatBookings.Any(s => s.ScreenRelease.Id == Model.ScreenRelease.Id && s.Seat.Id == seat.Id))
                             {
-                                <input type="checkbox" disabled id=@seat.Id name=@seat.Row@seat.Number class="toggle-checkbox">
+                                    <input type="checkbox" disabled id=@seat.Id name=@seat.Row@seat.Number class="toggle-checkbox">
                             }
 
                             //Enable if not booked already
                             else
                             {
-                               <input type="checkbox" id=@seat.Id name=@seat.Row@seat.Number class="toggle-checkbox">
+                                   <input type="checkbox" id=@seat.Id name=@seat.Row@seat.Number class="toggle-checkbox">
                             }
 
-                            <label width="" for=@seat.Row@seat.Number>@seat.Row@seat.Number</label> 
+                                <label width="" for=@seat.Row@seat.Number>@seat.Row@seat.Number</label> 
                         }
+                        </div>
                     </div>
                 </div>
-            </div>
         }
 
     }
 
 
     <script>
+
+        let isBuying = false;
         document.addEventListener("DOMContentLoaded", function () {
             const checkboxes = document.querySelectorAll(".toggle-checkbox");
             const seatCounterDisplay = document.getElementById("seatCounterDisplay");
@@ -103,11 +105,16 @@
                 });
             });
 
+            buyButton.addEventListener("click", function () {
+                isBuying = true;
+            });
+
          
         });
 
          window.addEventListener("beforeunload", function () {
-            navigator.sendBeacon("/Screens/CancelBooking");
+            if (!isBuying)
+                navigator.sendBeacon("/Screens/CancelBooking");
         });
     </script>
 

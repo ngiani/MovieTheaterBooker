@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MovieTheaterBooker.Data;
-using MovieTheaterBooker.HTTPExtensions;
 using MovieTheaterBooker.Models;
 using Newtonsoft.Json;
 
@@ -118,8 +117,6 @@ namespace MovieTheaterBooker.Controllers
         public async Task<IActionResult> ToggleSeat([FromBody] SeatToggleDTO dto)
         {
             // Get temp booking list from session as list of seats IDs
-            //var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
-
             List<int> bookedSeatsIDS; 
 
             if (!TempData.ContainsKey("bookedSeatsIDS"))
@@ -152,12 +149,8 @@ namespace MovieTheaterBooker.Controllers
             }
 
             //Save temp list in session
-            //HttpContext.Session.SetObjectAsJson("bookedSeatsIDS", bookedSeatsIDS);
-            //await HttpContext.Session.CommitAsync();
-            TempData["bookedSeatsIDS"]  = JsonConvert.SerializeObject(bookedSeatsIDS);
 
-            Console.WriteLine("ToggleSeat Session ID: " + HttpContext.Session.Id);
-            Console.WriteLine("ToggleSeat Keys: " + string.Join(", ", HttpContext.Session.Keys));
+            TempData["bookedSeatsIDS"]  = JsonConvert.SerializeObject(bookedSeatsIDS);
 
             return Ok();
         }
@@ -171,18 +164,11 @@ namespace MovieTheaterBooker.Controllers
         public async Task<IActionResult> Buy(int? releaseId)
         {
             // Get temp booking list from session as list of seats IDs
-            //var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
-
             string json = TempData["bookedSeatsIDS"].ToString();
             var bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
 
             if (bookedSeatsIDS == null)
                 ModelState.AddModelError(string.Empty, "Empy booked seats IDS.");
-
-
-
-            Console.WriteLine("ToggleSeat Session ID: " + HttpContext.Session.Id);
-            Console.WriteLine("ToggleSeat Keys: " + string.Join(", ", HttpContext.Session.Keys));
 
             var seats = await _context.Seats.Include(s => s.Screen).ToListAsync();
             var releases = await _context.ScreenReleases.Include(s => s.Movie).Include(s => s.Screen).ToListAsync();
@@ -213,7 +199,7 @@ namespace MovieTheaterBooker.Controllers
 
 
 
-            return RedirectToAction("Confirmed", "Screens");
+            return RedirectToAction("Confirmed", "Screens", new { releaseId = releaseId });
 
 
         }
@@ -222,10 +208,10 @@ namespace MovieTheaterBooker.Controllers
         /// Bookings confirm view (show booking from previous list)
         /// </summary>
         /// <returns></returns>
-        public async Task<IActionResult> Confirmed()
+        [HttpGet("Confirmed/{releaseId}")]
+        public async Task<IActionResult> Confirmed(int? releaseId)
         {
             // Get temp booking list from session as list of seats IDs
-            //var bookedSeatsIDS = HttpContext.Session.GetObjectFromJson<List<int>>("bookedSeatsIDS") ?? new List<int>();
 
             string json = TempData["bookedSeatsIDS"].ToString();
             var bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
@@ -242,7 +228,7 @@ namespace MovieTheaterBooker.Controllers
 
 
             //Filter list of bookings with seat IDs specified in temp list
-            var currentBookings = bookings.FindAll(b => bookedSeatsIDS.Contains(b.Seat.Id));
+            var currentBookings = bookings.FindAll(b => bookedSeatsIDS.Contains(b.Seat.Id) && b.ScreenRelease.Id == releaseId) ;
 
             //Model view with filtered bookings
             ConfirmedBookingVM confirmedBookingVM = new ConfirmedBookingVM();
@@ -263,7 +249,7 @@ namespace MovieTheaterBooker.Controllers
         [HttpPost]
         public IActionResult CancelBooking()
         {
-            HttpContext.Session.Remove("bookedSeatsIDS");
+            TempData.Remove("bookedSeatsIDS");
             return Ok();
         }
 
