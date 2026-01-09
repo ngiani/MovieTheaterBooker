@@ -46,6 +46,7 @@ namespace MovieTheaterBooker.Controllers
             }
 
             var screen = await _context.Screens
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (screen == null)
             {
@@ -76,6 +77,7 @@ namespace MovieTheaterBooker.Controllers
             }
 
             var screen = await _context.Screens
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (screen == null)
             {
@@ -86,6 +88,7 @@ namespace MovieTheaterBooker.Controllers
 
 
             var screenRelease = await _context.ScreenReleases.
+                        AsNoTracking().
                         Include(r => r.Screen).
                         Include(r => r.Movie).
                         FirstOrDefaultAsync(r => r.Id == releaseId);
@@ -96,10 +99,12 @@ namespace MovieTheaterBooker.Controllers
             }
 
             var seats = await _context.Seats.
+                AsNoTracking().
                 Where(s => s.Screen.Id == id).
                 ToListAsync();
 
             var bookings = await _context.SeatsBooking.
+                AsNoTracking().
                 Include(s => s.Seat).
                 Where(b => b.ScreenRelease.Id == releaseId).
                 ToListAsync();
@@ -170,8 +175,17 @@ namespace MovieTheaterBooker.Controllers
             if (bookedSeatsIDS == null)
                 ModelState.AddModelError(string.Empty, "Empy booked seats IDS.");
 
-            var seats = await _context.Seats.Include(s => s.Screen).ToListAsync();
-            var releases = await _context.ScreenReleases.Include(s => s.Movie).Include(s => s.Screen).ToListAsync();
+            // Optimize: Only load the specific seats we need, not all seats
+            var seats = await _context.Seats
+                .Include(s => s.Screen)
+                .Where(s => bookedSeatsIDS.Contains(s.Id))
+                .ToListAsync();
+
+            // Optimize: Only load the specific release we need, not all releases
+            var release = await _context.ScreenReleases
+                .Include(s => s.Movie)
+                .Include(s => s.Screen)
+                .FirstOrDefaultAsync(s => s.Id == releaseId);
 
 
             //Save to db all booked 
@@ -184,19 +198,16 @@ namespace MovieTheaterBooker.Controllers
                 var seat = seats.FirstOrDefault(s => s.Id == seatID);
 
                 //Geat screen release from Id 
-                var release = releases.FirstOrDefault(s => s.Id == releaseId);
-
                 seatBooking.Seat = seat;
                 seatBooking.ScreenRelease = release;
 
 
                 //Save to db 
                 _context.Add(seatBooking);
-
-                await _context.SaveChangesAsync();
             }
 
-
+            // Optimize: Save all bookings in a single database transaction instead of one per seat
+            await _context.SaveChangesAsync();
 
 
             return RedirectToAction("Confirmed", "Screens", new { releaseId = releaseId });
@@ -220,15 +231,15 @@ namespace MovieTheaterBooker.Controllers
                 ModelState.AddModelError(string.Empty, "Empy booked seats IDS.");
 
 
-            //Get bookings from Db
-            var bookings = await _context.SeatsBooking.Include(s => s.Seat).
-                Include(s => s.ScreenRelease).
-                Include(s => s.ScreenRelease.Movie).
-                Include(s => s.ScreenRelease.Screen).ToListAsync();
-
-
-            //Filter list of bookings with seat IDs specified in temp list
-            var currentBookings = bookings.FindAll(b => bookedSeatsIDS.Contains(b.Seat.Id) && b.ScreenRelease.Id == releaseId) ;
+            // Optimize: Filter at database level instead of loading all bookings into memory
+            var currentBookings = await _context.SeatsBooking
+                .AsNoTracking()
+                .Include(s => s.Seat)
+                .Include(s => s.ScreenRelease)
+                .Include(s => s.ScreenRelease.Movie)
+                .Include(s => s.ScreenRelease.Screen)
+                .Where(b => bookedSeatsIDS.Contains(b.Seat.Id) && b.ScreenRelease.Id == releaseId)
+                .ToListAsync();
 
             //Model view with filtered bookings
             ConfirmedBookingVM confirmedBookingVM = new ConfirmedBookingVM();
