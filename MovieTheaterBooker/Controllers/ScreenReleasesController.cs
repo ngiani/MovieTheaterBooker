@@ -208,8 +208,11 @@ namespace MovieTheaterBooker.Controllers
         /// <returns></returns>
         private bool IsConflict(Screen screen, Movie movie, DateTime startDate)
         {
+
+            //Get possible conflicts by checking releases at the same screen
             List<ScreenRelease> possibleConflicts = _context.ScreenReleases.Include(r => r.Screen).Where(r => r.Screen.Id == screen.Id).Include(r => r.Movie).ToList();
 
+            //Find a release where the movie time overlaps with the current one
             foreach (var release in possibleConflicts)
             {
                 bool endsEarlier = startDate.AddMinutes(movie.Duration).CompareTo(release.ReleaseTime) <= 0;
