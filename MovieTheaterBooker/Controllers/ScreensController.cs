@@ -173,7 +173,7 @@ namespace MovieTheaterBooker.Controllers
             var bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
 
             if (bookedSeatsIDS == null)
-                ModelState.AddModelError(string.Empty, "Empy booked seats IDS.");
+                ModelState.AddModelError(string.Empty, "Empty booked seats IDS.");
 
             // Optimize: Only load the specific seats we need, not all seats
             var seats = await _context.Seats
@@ -187,6 +187,11 @@ namespace MovieTheaterBooker.Controllers
                 .Include(s => s.Screen)
                 .FirstOrDefaultAsync(s => s.Id == releaseId);
 
+            if (release == null)
+            {
+                ModelState.AddModelError(string.Empty, "Screen release not found.");
+                return BadRequest(ModelState);
+            }
 
             //Save to db all booked 
             foreach (var seatID in bookedSeatsIDS)
@@ -194,10 +199,10 @@ namespace MovieTheaterBooker.Controllers
                 //Create a seat booking from seat ID
                 SeatBooking seatBooking = new SeatBooking();
 
-                //Geat seat from Id
+                //Get seat from Id
                 var seat = seats.FirstOrDefault(s => s.Id == seatID);
 
-                //Geat screen release from Id 
+                //Get screen release from Id 
                 seatBooking.Seat = seat;
                 seatBooking.ScreenRelease = release;
 
@@ -228,7 +233,7 @@ namespace MovieTheaterBooker.Controllers
             var bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
 
             if (bookedSeatsIDS == null)
-                ModelState.AddModelError(string.Empty, "Empy booked seats IDS.");
+                ModelState.AddModelError(string.Empty, "Empty booked seats IDS.");
 
 
             // Optimize: Filter at database level instead of loading all bookings into memory
