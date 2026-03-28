@@ -14,7 +14,8 @@
 - Screens management as admin
 - Show of bookings as user
 - Email confirmation system on register
-- Mockup of payment when booking a seat 
+- Mockup of payment when booking a seat
+- Polished frontend
 
 
 ## 🧱 Project Architecture
