@@ -28,7 +28,7 @@ namespace MovieTheaterBooker.Controllers
         // GET: Movies
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Movies.ToListAsync());
+            return View(await _context.Movies.AsNoTracking().ToListAsync());
         }
 
         // GET: Movies/Details/5
@@ -40,6 +40,7 @@ namespace MovieTheaterBooker.Controllers
             }
 
             var movie = await _context.Movies
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {
@@ -49,6 +50,7 @@ namespace MovieTheaterBooker.Controllers
             MovieDetailsVM movieDetails = _mapper.Map<MovieDetailsVM>(movie);
 
             movieDetails.Releases = await _context.ScreenReleases.
+                AsNoTracking().
                 Where(m => m.Movie.Id == id).
                 Include(s => s.Screen).
                 ToListAsync();
@@ -140,6 +142,7 @@ namespace MovieTheaterBooker.Controllers
             }
 
             var movie = await _context.Movies
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {

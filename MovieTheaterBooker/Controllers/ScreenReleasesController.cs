@@ -25,7 +25,7 @@ namespace MovieTheaterBooker.Controllers
         // GET: ScreenReleases
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ScreenReleases.ToListAsync());
+            return View(await _context.ScreenReleases.AsNoTracking().ToListAsync());
         }
 
         // GET: ScreenReleases/Details/5
@@ -37,6 +37,7 @@ namespace MovieTheaterBooker.Controllers
             }
 
             var screenRelease = await _context.ScreenReleases
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (screenRelease == null)
             {
@@ -81,7 +82,7 @@ namespace MovieTheaterBooker.Controllers
             screenRelease.Movie = movie;
             screenRelease.Screen = screen;
 
-            if (IsConflict(screenRelease.Screen, screenRelease.Movie, screenRelease.ReleaseTime))
+            if (await IsConflictAsync(screenRelease.Screen, screenRelease.Movie, screenRelease.ReleaseTime))
                 ModelState.AddModelError(nameof(screenRelease.ReleaseTime), "Conflict: another release at the same time");
 
 
@@ -170,6 +171,7 @@ namespace MovieTheaterBooker.Controllers
             }
 
             var screenRelease = await _context.ScreenReleases
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (screenRelease == null)
             {
@@ -206,25 +208,22 @@ namespace MovieTheaterBooker.Controllers
         /// <param name="movie"></param>
         /// <param name="startDate"></param>
         /// <returns></returns>
-        private bool IsConflict(Screen screen, Movie movie, DateTime startDate)
+        private async Task<bool> IsConflictAsync(Screen screen, Movie movie, DateTime startDate)
         {
+            var endDate = startDate.AddMinutes(movie.Duration);
 
-            //Get possible conflicts by checking releases at the same screen
-            List<ScreenRelease> possibleConflicts = _context.ScreenReleases.Include(r => r.Screen).Where(r => r.Screen.Id == screen.Id).Include(r => r.Movie).ToList();
+            // Optimize: Filter at database level and check for overlaps using SQL
+            // A release conflicts if it overlaps with the new release time window
+            var hasConflict = await _context.ScreenReleases
+                .Where(r => r.Screen.Id == screen.Id)
+                .Include(r => r.Movie)
+                .AnyAsync(r => 
+                    // The new release starts before this release ends
+                    startDate < r.ReleaseTime.AddMinutes(r.Movie.Duration) &&
+                    // The new release ends after this release starts
+                    endDate > r.ReleaseTime);
 
-            //Find a release where the movie time overlaps with the current one
-            foreach (var release in possibleConflicts)
-            {
-                bool endsEarlier = startDate.AddMinutes(movie.Duration).CompareTo(release.ReleaseTime) <= 0;
-                bool startsLater = startDate.CompareTo(release.ReleaseTime.AddMinutes(release.Movie.Duration)) >= 0;
-
-                if (!endsEarlier && !startsLater)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return hasConflict;
            
         }
     }
