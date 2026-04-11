@@ -1,3 +1,4 @@
+![theater 2](https://github.com/user-attachments/assets/aa1164a9-114e-4d03-b0b5-01a9c37627fc)
 # 🎬 MovieTheaterBooker
 
 **MovieTheaterBooker** is an ASP.NET Core MVC web application that allows you to manage a movie theater, including movie screenings, theaters, seats, and reservations both as admin and user role. 
@@ -72,6 +73,9 @@ MovieTheaterBooker/
 ## 📸 Screenshots
 
 ![Theater](https://github.com/user-attachments/assets/5dba5366-1fcc-47b8-830c-70c44a98771e)
+![theater 2](https://github.com/user-attachments/assets/87172609-0e9a-4c4e-aec2-69518ad36a31)
+![Theater 3](https://github.com/user-attachments/assets/febaf44f-7832-424e-b897-eebdde46d8fa)
+![Theater 4](https://github.com/user-attachments/assets/5d915e6b-b0f3-4c72-97ea-4c5c36256516)
 
 
 ## 🧪 Running Tests
