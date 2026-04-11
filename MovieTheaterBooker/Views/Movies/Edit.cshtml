@@ -4,41 +4,69 @@
     ViewData["Title"] = "Edit Movie";
 }
 
-<h3>Edit Movie</h3>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Plot" class="control-label"></label>
-                <textarea asp-for="Plot" class="form-control"></textarea>
-                <span asp-validation-for="Plot" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Genre" class="control-label"></label>
-                <input asp-for="Genre" class="form-control" />
-                <span asp-validation-for="Genre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Duration" class="control-label"></label>
-                <input asp-for="Duration" class="form-control" />
-                <span asp-validation-for="Duration" class="text-danger"></span>
-            </div>
-            <br />
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-warning" />
-                <a asp-action="Index" class="btn btn-danger">Cancel</a>
-            </div>
-        </form>
-    </div>
+<div class="text-center mb-4">
+    <h1><i class="fas fa-edit"></i> Edit Movie</h1>
 </div>
 
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="details-container">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="form-group">
+                    <label asp-for="Title" class="form-label">
+                        <i class="fas fa-heading"></i> @Html.DisplayNameFor(model => model.Title)
+                    </label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Plot" class="form-label">
+                        <i class="fas fa-align-left"></i> @Html.DisplayNameFor(model => model.Plot)
+                    </label>
+                    <textarea asp-for="Plot" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Plot" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Genre" class="form-label">
+                        <i class="fas fa-tag"></i> @Html.DisplayNameFor(model => model.Genre)
+                    </label>
+                    <input asp-for="Genre" class="form-control" />
+                    <span asp-validation-for="Genre" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Duration" class="form-label">
+                        <i class="far fa-clock"></i> @Html.DisplayNameFor(model => model.Duration)
+                    </label>
+                    <input asp-for="Duration" class="form-control" type="number" />
+                    <span asp-validation-for="Duration" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ImageUrl" class="form-label">
+                        <i class="fas fa-image"></i> Image URL
+                    </label>
+                    <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/poster.jpg" />
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    <small class="text-muted">Enter a valid image URL (e.g., from TMDB, IMDb, or upload to a hosting service)</small>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary flex-fill">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-danger flex-fill">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @{

@@ -22,7 +22,18 @@ namespace MovieTheaterBooker.Controllers
         {
             _context = context;
             _mapper = mapper;   
+        }
 
+        /// <summary>
+        /// Validates if the image URL is a valid HTTP/HTTPS URL
+        /// </summary>
+        private bool IsValidImageUrl(string? imageUrl)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl))
+                return true; // Empty URL is valid (optional field)
+
+            return Uri.TryCreate(imageUrl, UriKind.Absolute, out Uri? uriResult) &&
+                   (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
 
         // GET: Movies
@@ -69,8 +80,14 @@ namespace MovieTheaterBooker.Controllers
         [HttpPost]
         [Authorize (Roles = Roles.Administrator)]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Plot,Genre,Duration")] Movie movie)
+        public async Task<IActionResult> Create([Bind("Id,Title,Plot,Genre,Duration,ImageUrl")] Movie movie)
         {
+            // Validate image URL
+            if (!IsValidImageUrl(movie.ImageUrl))
+            {
+                ModelState.AddModelError(nameof(movie.ImageUrl), "Please enter a valid HTTP or HTTPS URL for the image.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(movie);
@@ -101,11 +118,17 @@ namespace MovieTheaterBooker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Plot,Genre,Duration")] Movie movie)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Plot,Genre,Duration,ImageUrl")] Movie movie)
         {
             if (id != movie.Id)
             {
                 return NotFound();
+            }
+
+            // Validate image URL
+            if (!IsValidImageUrl(movie.ImageUrl))
+            {
+                ModelState.AddModelError(nameof(movie.ImageUrl), "Please enter a valid HTTP or HTTPS URL for the image.");
             }
 
             if (ModelState.IsValid)

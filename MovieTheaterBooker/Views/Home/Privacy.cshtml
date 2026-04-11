@@ -1,6 +1,41 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="text-center mb-4">
+    <h1><i class="fas fa-shield-alt"></i> @ViewData["Title"]</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="details-container">
+            <h3 class="mb-3">Your Privacy Matters</h3>
+            <p class="text-muted">
+                At MovieTheaterBooker, we are committed to protecting your privacy and ensuring the security of your personal information.
+            </p>
+
+            <hr />
+
+            <h4 class="mt-4 mb-3"><i class="fas fa-database"></i> Information We Collect</h4>
+            <p class="text-muted">
+                We collect information that you provide when creating an account and booking tickets, including your name, email address, and booking preferences.
+            </p>
+
+            <h4 class="mt-4 mb-3"><i class="fas fa-lock"></i> How We Use Your Information</h4>
+            <p class="text-muted">
+                Your information is used solely for processing your ticket bookings, sending confirmations, and improving our service. We never share your personal data with third parties without your consent.
+            </p>
+
+            <h4 class="mt-4 mb-3"><i class="fas fa-user-shield"></i> Data Security</h4>
+            <p class="text-muted">
+                We implement industry-standard security measures to protect your personal information from unauthorized access, alteration, or disclosure.
+            </p>
+
+            <div class="mt-4 text-center">
+                <a asp-controller="Movies" asp-action="Index" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Back to Movies
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

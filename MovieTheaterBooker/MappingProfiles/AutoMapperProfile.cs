@@ -10,6 +10,8 @@ namespace MovieTheaterBooker.MappingProfiles
         {
             CreateMap<Movie, MovieDetailsVM>();
             CreateMap<Screen, ScreenAtReleaseVM>();
+            CreateMap<Screen, ScreenVM>();
+            CreateMap<Screen, ScreenCreateVM>();
         }
     }
 }

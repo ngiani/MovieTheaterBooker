@@ -17,5 +17,7 @@ namespace MovieTheaterBooker.Data
 
         [Range(60, 180)]
         public int Duration { get; set; }
+
+        public string? ImageUrl { get; set; }
     }
 }

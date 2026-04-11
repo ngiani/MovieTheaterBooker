@@ -1,0 +1,46 @@
+﻿@model IEnumerable<MovieTheaterBooker.Models.ScreenVM>
+
+@{
+    ViewData["Title"] = "Theater Screens";
+}
+
+<div class="text-center mb-4">
+    <h1><i class="fas fa-desktop"></i> Theater Screens</h1>
+    <p class="lead text-muted">Manage your cinema screens</p>
+</div>
+
+<div class="movie-grid">
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-tv fa-4x" style="color: var(--primary-color);"></i>
+                </div>
+                <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+                <p class="card-text">
+                    <i class="fas fa-chair"></i> @Html.DisplayFor(modelItem => item.SeatsCount) seats
+                </p>
+
+                @if (User.IsInRole(Roles.Administrator))
+                {
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@{
+    var isAdmin = User.IsInRole(Roles.Administrator);
+    if (isAdmin)
+    {
+        <div class="text-center mt-4">
+            <a class="btn btn-success btn-lg" asp-action="Create">
+                <i class="fas fa-plus-circle"></i> Add New Screen
+            </a>
+        </div>
+    }
+}

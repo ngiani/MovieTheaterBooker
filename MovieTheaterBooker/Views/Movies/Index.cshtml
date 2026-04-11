@@ -1,57 +1,60 @@
 ﻿@model IEnumerable<MovieTheaterBooker.Data.Movie>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Movies Playing Now";
 }
 
-<h1>Movies playing now</h1>
+<div class="text-center mb-4">
+    <h1><i class="fas fa-film"></i> Movies Playing Now</h1>
+    <p class="lead text-muted">Discover the latest releases and book your tickets</p>
+</div>
 
-<div class="container">
-    <div class="row">
+<div class="movie-grid">
+    @foreach (var item in Model)
+    {
+        <div class="card">
+            <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "https://via.placeholder.com/300x400/2f2f2f/ffffff?text=" + Uri.EscapeDataString(item.Title) : item.ImageUrl)" 
+                 class="card-img-top" 
+                 alt="@item.Title"
+                 onerror="this.src='https://via.placeholder.com/300x400/2f2f2f/ffffff?text=No+Image'" />
+            <div class="card-body">
+                <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+                <p class="card-text">
+                    <i class="fas fa-tag"></i> @Html.DisplayFor(modelItem => item.Genre)
+                </p>
+                <p class="card-text">
+                    <i class="far fa-clock"></i> @Html.DisplayFor(modelItem => item.Duration) minutes
+                </p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-primary flex-fill" asp-action="Details" asp-route-id="@item.Id">
+                        <i class="fas fa-info-circle"></i> Details
+                    </a>
 
-        @foreach (var item in Model)
-        {
-            <div class="card" style="width: 18rem;">
-                <img src="..." class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
-                    <p class="card-text">@Html.DisplayFor(modelItem => item.Genre) </p>
-                    <p class="card-text">@Html.DisplayFor(modelItem => item.Duration) minutes</p>
-                    <form>
-                        <button class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">
-                            Details
-                        </button>
+                    @if (User.IsInRole(Roles.Administrator))
+                    {
+                        
+                        <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id" title="Edit Movie">
+                            <i class="fas fa-edit"></i>
+                        </a>
 
-                        @if (User.IsInRole(Roles.Administrator))
-                        {
-                            <button class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">
-                                Delete
-                            </button>
-                        }
-                      
-                    </form>
-
-
-                  
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    }
                 </div>
             </div>
-
-        }
-
-
-    </div>
-</div>
-<br />
-<div>
-    @{
-        var isAdmin = User.IsInRole(Roles.Administrator);
-        if (isAdmin)
-        {
-            <form>
-                <button class="btn btn-primary" style="background-color: forestgreen" asp-action="Create">
-                    Add New
-                </button>
-            </form>
-        }
+        </div>
     }
 </div>
+
+@{
+    var isAdmin = User.IsInRole(Roles.Administrator);
+    if (isAdmin)
+    {
+        <div class="text-center mt-4">
+            <a class="btn btn-success btn-lg" asp-action="Create">
+                <i class="fas fa-plus-circle"></i> Add New Movie
+            </a>
+        </div>
+    }
+}

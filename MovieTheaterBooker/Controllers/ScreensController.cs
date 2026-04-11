@@ -26,10 +26,33 @@ namespace MovieTheaterBooker.Controllers
         }
 
         // GET: Screens
-        /*public async Task<IActionResult> Index()
+        /// <summary>
+        /// Get view of screens 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IActionResult> Index()
         {
-            return View(await _context.Screens.ToListAsync());
-        }*/
+            var screens = await _context.Screens.ToListAsync();
+            var seats = await _context.Seats.ToListAsync();
+
+            //Send list of screens with number of seats
+            List<ScreenVM> screenVMs = new List<ScreenVM>();
+
+            foreach (var screen in screens)
+            {
+                ScreenVM screenVM = _mapper.Map<ScreenVM>(screen);
+
+
+                var seatsInScreen = seats.FindAll(s => s.Screen.Id == screenVM.Id);
+
+                screenVM.SeatsCount = seatsInScreen.Count();
+
+                screenVMs.Add(screenVM);
+
+            }
+
+            return View(screenVMs);
+        }
 
         // GET: Screens/Details/5
         /// <summary>
@@ -63,7 +86,7 @@ namespace MovieTheaterBooker.Controllers
         /// <param name="releaseId"></param>
         /// <returns></returns>
         [HttpGet("Screens/Details/{id}/{releaseId}")]
-        public async Task<IActionResult> Details(int? id, int? releaseId)
+        public async Task<IActionResult> DetailsAtRelease(int? id, int? releaseId)
         {
             if (id == null)
             {
@@ -112,25 +135,29 @@ namespace MovieTheaterBooker.Controllers
             return View(screenAtRelease);
         }
 
-
+        /// <summary>
+        /// Toggle chosen seat before booking 
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> ToggleSeat([FromBody] SeatToggleDTO dto)
         {
             // Get temp booking list from session as list of seats IDs
-            List<int> bookedSeatsIDS; 
+            List<int> bookedSeatsIDS;
 
             if (!TempData.ContainsKey("bookedSeatsIDS"))
             {
                 bookedSeatsIDS = new List<int>();
             }
-            
+
             else
             {
                 string json = TempData["bookedSeatsIDS"].ToString();
                 bookedSeatsIDS = JsonConvert.DeserializeObject<List<int>>(json);
             }
-         
-               
+
+
 
             //Check if toggle is selected
             if (dto.Selected)
@@ -150,7 +177,7 @@ namespace MovieTheaterBooker.Controllers
 
             //Save temp list in session
 
-            TempData["bookedSeatsIDS"]  = JsonConvert.SerializeObject(bookedSeatsIDS);
+            TempData["bookedSeatsIDS"] = JsonConvert.SerializeObject(bookedSeatsIDS);
 
             return Ok();
         }
@@ -228,7 +255,7 @@ namespace MovieTheaterBooker.Controllers
 
 
             //Filter list of bookings with seat IDs specified in temp list
-            var currentBookings = bookings.FindAll(b => bookedSeatsIDS.Contains(b.Seat.Id) && b.ScreenRelease.Id == releaseId) ;
+            var currentBookings = bookings.FindAll(b => bookedSeatsIDS.Contains(b.Seat.Id) && b.ScreenRelease.Id == releaseId);
 
             //Model view with filtered bookings
             ConfirmedBookingVM confirmedBookingVM = new ConfirmedBookingVM();
@@ -254,9 +281,11 @@ namespace MovieTheaterBooker.Controllers
         }
 
         // GET: Screens/Create
-        /*public IActionResult Create()
+        public IActionResult Create()
         {
-            return View();
+            ScreenCreateVM screenCreateVM = new ScreenCreateVM();
+
+            return View(screenCreateVM);
         }
 
         // POST: Screens/Create
@@ -264,66 +293,49 @@ namespace MovieTheaterBooker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Screen screen)
+        public async Task<IActionResult> Create([Bind("Id,Name,rowsCount,rowsLength")] ScreenCreateVM screenVM)
         {
+            if (ScreenExists(screenVM.Name))
+               ModelState.AddModelError(nameof(screenVM.Name), "Name of the screen already exists");
+
             if (ModelState.IsValid)
             {
+                Screen screen = _mapper.Map<ScreenCreateVM, Screen>(screenVM);
+
                 _context.Add(screen);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(screen);
-        }
 
-        // GET: Screens/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+                //Enable temporarily IDENTITY INSERT on Seat ID, which usually should be incremented automatically
+                _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Seats ON");
 
-            var screen = await _context.Screens.FindAsync(id);
-            if (screen == null)
-            {
-                return NotFound();
-            }
-            return View(screen);
-        }
+                //Add seats from number of rows and length of rows 
+                int maxSeatID = _context.Seats.Max(s => s.Id);
 
-        // POST: Screens/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Screen screen)
-        {
-            if (id != screen.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                for (int i = 0; i < screenVM.rowsCount; i++)
                 {
-                    _context.Update(screen);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ScreenExists(screen.Id))
+                    for (int j = 0; j < screenVM.rowsLength; j++)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        Seat seat = new Seat();
+
+                        seat.Id = maxSeatID++;
+
+                        seat.Screen = screen;
+                        seat.Row = GetSeatName(i).ToString();
+                        seat.Number = j;
+
+                        _context.Add(seat);
                     }
                 }
+
+                await _context.SaveChangesAsync();
+
+                _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT Seats OFF");
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(screen);
+
+
+            return View(screenVM);
         }
 
         // GET: Screens/Delete/5
@@ -357,11 +369,23 @@ namespace MovieTheaterBooker.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }*/
+        }
 
         private bool ScreenExists(int id)
         {
             return _context.Screens.Any(e => e.Id == id);
+        }
+
+        private bool ScreenExists(string screenName)
+        {
+            return _context.Screens.Any(e => e.Name == screenName);
+        }
+
+        private char GetSeatName(int id)
+        {
+            string letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            return letters[id];
         }
     }
 }
