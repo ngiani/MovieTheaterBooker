@@ -67,6 +67,13 @@ MovieTheaterBooker/
 
 5. Open your browser and go to localhost.
 
+
+
+## 📸 Screenshots
+
+![Theater](https://github.com/user-attachments/assets/5dba5366-1fcc-47b8-830c-70c44a98771e)
+
+
 ## 🧪 Running Tests
 
 If test projects are included (not present in this version), you can run them with:
